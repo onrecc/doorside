@@ -24,3 +24,33 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes gradient-available {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes gradient-in-use {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.gradient-available {
+  background: linear-gradient(-45deg, #10b981, #22c55e, #2bd395, #4ade80);
+  background-size: 400% 400%;
+  animation: gradient-available 15s ease infinite;
+}
+
+.gradient-in-use {
+  background: linear-gradient(-45deg, #ef4444, #f54a4a, #dc2626, #fb653c);
+  background-size: 400% 400%;
+  animation: gradient-in-use 15s ease infinite;
+}
