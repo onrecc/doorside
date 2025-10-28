@@ -13,26 +13,31 @@ const debugData = [
       {
         start: new Date("2025-10-27T16:00:00"),
         end:   new Date("2025-10-27T17:00:00"),
+        "booking-title": "Team Meeting",
         "booker-name": "Alice Johnson"
       },
       {
         start: new Date("2025-10-27T20:00:00"),
         end:   new Date("2025-10-27T20:45:00"),
+        "booking-title": "Project Update",
         "booker-name": "Bob Martinez"
       },
       {
-        start: new Date("2025-10-30T22:40:00"),
-        end:   new Date("2025-10-31T00:10:00"),
+        start: new Date("2025-10-28T22:40:00"),
+        end:   new Date("2025-10-29T00:10:00"),
+        "booking-title": "Late Night Work",
         "booker-name": "Chen Wei"
       },
       {
         start: new Date("2025-10-31T05:40:00"),
         end:   new Date("2025-10-31T06:40:00"),
+        "booking-title": "Morning Briefing",
         "booker-name": "Dana Schultz"
       },
       {
         start: new Date("2025-10-31T15:40:00"),
         end:   new Date("2025-10-31T16:40:00"),
+        "booking-title": "Afternoon Workshop",
         "booker-name": "Emilia Rossi"
       }
     ]
@@ -112,9 +117,12 @@ export default function Home() {
           </div>
           }
         </div>
-        <div className="w-1/3 h-11/12 bg-gray-100 rounded-4xl m-8 self-center opacity-40 border-2">
-          <p className="text-lg text-gray-700">
-            <div className="h-full flex items-center justify-end">
+        <div className="w-1/3 h-11/12 bg-gray-100 rounded-4xl m-8 mr-6 self-center opacity-40 border-2 border-white">
+          <div className="text-lg text-gray-700">
+            <div className="h-full flex items-center justify-between">
+              <span className={`text-xl font-semibold p-4 pr-6 justify-self-end text-gray-900`}>
+                Schedule
+              </span>
               <span id="clock" className={`text-xl font-semibold p-4 pr-6 justify-self-end text-gray-900`}>
                 {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
               </span>
@@ -129,17 +137,29 @@ export default function Home() {
                 return end > now && start <= twelveHoursLater;
               })
               .map((slot, index) => {
-                const start = new Date(slot.start);
-                const end = new Date(slot.end);
                 return (
-                  <span key={index} className={`ml-6 mt-6 block text-lg ${zalando.className}`}>
-                    {start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} : {slot["booker-name"]}
-                  </span>
+                  <ScheduleItem key={index} slot={slot} />
                 );
               })}
-          </p>
+          </div>
         </div>
       </main>
+    </div>
+  );
+}
+
+const ScheduleItem = ({ slot }: { slot: { start: Date; end: Date; "booker-name": string; "booking-title"?: string } }) => {
+  const start = new Date(slot.start);
+  const end = new Date(slot.end);
+  
+  return (
+    <div className="bg-gray-50 rounded-4xl p-2 border-2 border-white m-1 mt-0">
+      <span className={`mx-3 mt-2 block text-lg`}>
+        {start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+      </span>
+      <span className="mx-3 mb-2 block text-xl font-semibold">
+        {slot["booking-title"] || slot["booker-name"]}
+      </span>
     </div>
   );
 }
