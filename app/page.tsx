@@ -114,37 +114,6 @@ export default function Home() {
     return true; 
   }
 
-  const getAvailabilityMessage = () => {
-    const now = new Date();
-    
-    // Check if currently in a booking
-    for (const slot of debugData[0].schedule) {
-      const start = new Date(slot.start);
-      const end = new Date(slot.end);
-      if (now >= start && now <= end) {
-        return `In use until ${end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
-      }
-    }
-    
-    // Find the next upcoming booking
-    const upcomingSlots = debugData[0].schedule
-      .map(slot => ({ ...slot, start: new Date(slot.start), end: new Date(slot.end) }))
-      .filter(slot => slot.start > now)
-      .sort((a, b) => a.start.getTime() - b.start.getTime());
-    
-    if (upcomingSlots.length > 0) {
-      const nextBooking = upcomingSlots[0];
-      const twelveHoursLater = new Date(now.getTime() + 12 * 60 * 60 * 1000);
-      
-      // Only show "Available until" if next booking is within 12 hours
-      if (nextBooking.start <= twelveHoursLater) {
-        return `Available until ${nextBooking.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
-      }
-    }
-    
-    return "Available";
-  }
-
   return (
     <div 
       className="flex min-h-screen items-center justify-centerfont-sans bg-black overflow-hidden"
@@ -157,21 +126,7 @@ export default function Home() {
     >
       <main className={`flex h-screen w-screen ${checkAvailability() ? 'gradient-available' : 'gradient-in-use'} ${zalando.className}`}>
         <div className="w-2/3 h-full p-8 pt-12 relative">
-          <h1 className={`text-7xl font-medium text-gray-900`}>{debugData[0].name}</h1>
-          <h2 className="mt-4 text-4xl text-gray-200 font-medium">{getAvailabilityMessage()}</h2>
-
-          {checkAvailability() && <div className="mt-6 inline-block bg-gray-200 p-3 px-9 rounded-3xl hover:opacity-80">
-            <p className="text-green-500 font-semibold text-md">Book now</p>
-          </div>}
-          {!checkAvailability() && <div>
-            <div className="mt-6 inline-block bg-gray-200 p-3 px-9 rounded-3xl hover:opacity-80">
-              <p className="text-red-500 font-semibold text-md">Release room</p>
-            </div>
-            <div className="mt-6 m-3 inline-block bg-gray-200 opacity-40 p-3 px-9 rounded-3xl hover:opacity-20">
-              <p className="text-red-500 font-semibold text-md opacity-100">Extend booking</p>
-            </div>
-          </div>
-          }
+          <Available checkAvailability={checkAvailability} />
 
           <div 
             className={`absolute bottom-0 left-2 right-0 bg-white/20 backdrop-blur-lg border-t border-white/30 rounded-t-3xl p-6 transition-transform duration-300 ease-in-out ${
@@ -242,4 +197,61 @@ const ScheduleItem = ({ slot }: { slot: { start: Date; end: Date; "booker-name":
       </span>
     </div>
   );
+}
+
+const Available = ({ checkAvailability }: { checkAvailability: () => boolean }) => {
+    const getAvailabilityMessage = () => {
+    const now = new Date();
+    
+    // Check if currently in a booking
+    for (const slot of debugData[0].schedule) {
+      const start = new Date(slot.start);
+      const end = new Date(slot.end);
+      if (now >= start && now <= end) {
+        return `In use until ${end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+      }
+    }
+    
+    // Find the next upcoming booking
+    const upcomingSlots = debugData[0].schedule
+      .map(slot => ({ ...slot, start: new Date(slot.start), end: new Date(slot.end) }))
+      .filter(slot => slot.start > now)
+      .sort((a, b) => a.start.getTime() - b.start.getTime());
+    
+    if (upcomingSlots.length > 0) {
+      const nextBooking = upcomingSlots[0];
+      const twelveHoursLater = new Date(now.getTime() + 12 * 60 * 60 * 1000);
+      
+      // Only show "Available until" if next booking is within 12 hours
+      if (nextBooking.start <= twelveHoursLater) {
+        return `Available until ${nextBooking.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+      }
+    }
+    
+    return "Available";
+  }
+
+  if (checkAvailability()) {
+    return (
+      <div>
+        <h1 className={`text-7xl font-medium text-gray-900`}>{debugData[0].name}</h1>
+        <h2 className="mt-4 text-4xl text-gray-200 font-medium">{getAvailabilityMessage()}</h2>
+
+        <div className="mt-6 inline-block bg-gray-200 p-3 px-9 rounded-3xl hover:opacity-80">
+          <p className="text-green-500 font-semibold text-md">Book now</p>
+        </div>
+      </div>
+    )
+  } else {
+    return (
+      <div>
+        <div className="mt-6 inline-block bg-gray-200 p-3 px-9 rounded-3xl hover:opacity-80">
+          <p className="text-red-500 font-semibold text-md">Release room</p>
+        </div>
+        <div className="mt-6 m-3 inline-block bg-gray-200 opacity-40 p-3 px-9 rounded-3xl hover:opacity-20">
+          <p className="text-red-500 font-semibold text-md opacity-100">Extend booking</p>
+        </div>
+      </div>
+    )
+  }
 }
